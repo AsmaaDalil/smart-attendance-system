@@ -11,13 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subjects', function (Blueprint $table) {
-            $table->id();
-            $table->string('subject_name');
-            $table->string('subject_code');
-            $table->foreignId('user_id')->constrained(); // المرتبط بجدول الـ users (الأساتذة)
-            $table->timestamps();
-        });
+ Schema::create('subjects', function (Blueprint $table) {
+    $table->id();
+    $table->string('subject_name');
+    $table->string('subject_code')->unique();
+
+    $table->foreignId('user_id')
+        ->constrained('users')
+        ->restrictOnDelete();
+
+    $table->timestamps();
+});
     }
 
     /**

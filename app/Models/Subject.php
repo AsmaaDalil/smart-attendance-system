@@ -15,4 +15,8 @@ class Subject extends Model
     public function sessions() {
         return $this->hasMany(AttendanceSession::class);
     }
+    public function students()
+{
+    return $this->belongsToMany(Student::class);
+}
 }

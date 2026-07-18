@@ -2,24 +2,29 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class StudentSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        \App\Models\Student::create([
-        'name' => 'Test Student',
-        'email' => 'student@test.com',
-        'password' => bcrypt('12345678'),
-        'phone' => '0912345678',
-        'address' => 'Damascus',
-        'is_dormitory' => 0,
-        'academic_year' => 4,
-    ]);
+        $studentUser = User::where(
+            'email',
+            'student@attendance.com'
+        )->firstOrFail();
+
+        Student::updateOrCreate(
+            ['user_id' => $studentUser->id],
+            [
+                'university_number' => '20260001',
+                'phone' => '0912345678',
+                'address' => 'Damascus',
+                'is_dormitory' => false,
+                'academic_year' => 4,
+                'device_token' => null,
+            ]
+        );
     }
 }

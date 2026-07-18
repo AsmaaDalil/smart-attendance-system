@@ -6,8 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class AttendanceSession extends Model
 {
-    protected $fillable = ['subject_id', 'room_id', 'lecture_number', 'lecture_title', 'qr_current_code', 'start_time', 'end_time'];
-
+protected $fillable = [
+    'subject_id',
+    'room_id',
+    'lecture_number',
+    'lecture_title',
+    'qr_current_code',
+    'qr_expires_at',
+    'start_time',
+    'end_time',
+    'status',
+];
     public function subject() {
         return $this->belongsTo(Subject::class);
     }

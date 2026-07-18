@@ -1,5 +1,5 @@
-<x-app-layout>
-    <div class="min-h-screen bg-[#f8f9fa]">
+<x-student-layout>
+        <div class="min-h-screen bg-[#f8f9fa]">
 
         <!-- Navbar -->
         <div class="bg-white shadow-sm">
@@ -14,23 +14,42 @@
                     </p>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <div class="text-right">
-                        <h4 class="font-semibold text-[#1a4a40]">
-                            {{ auth()->user()->name }}
-                        </h4>
-                        <p class="text-sm text-gray-500">
-                            Student
-                        </p>
-                    </div>
+            <div class="flex items-center gap-4">
 
-                    <div class="w-12 h-12 rounded-full bg-[#1a4a40] flex items-center justify-center text-white font-bold">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                </div>
+    <div class="text-right">
+        <h4 class="font-semibold text-[#1a4a40]">
+            {{ auth()->user()->name }}
+        </h4>
 
-            </div>
+        <p class="text-sm text-gray-500">
+            Student
+        </p>
+    </div>
+
+    <div class="w-12 h-12 rounded-full bg-[#1a4a40]
+                flex items-center justify-center text-white font-bold">
+
+        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+    </div>
+
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+
+        <button type="submit"
+                class="px-4 py-2 rounded-xl
+                       border border-red-200
+                       bg-red-50 text-red-600
+                       hover:bg-red-500 hover:text-white
+                       transition duration-300">
+
+            Logout
+        </button>
+    </form>
+
+</div>
+            </div>  
         </div>
+            
 
         <div class="max-w-7xl mx-auto p-6">
 
@@ -156,4 +175,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-student-layout>

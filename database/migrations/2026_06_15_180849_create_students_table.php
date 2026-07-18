@@ -9,21 +9,26 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('students', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('phone', 50);
-            $table->string('address');
-            $table->tinyInteger('is_dormitory');
-            $table->integer('academic_year');
-            $table->string('device_token')->nullable();
-            $table->timestamps();
-        });
-    }
+   public function up(): void
+{
+    Schema::create('students', function (Blueprint $table) {
+        $table->id();
+
+        $table->foreignId('user_id')
+            ->unique()
+            ->constrained('users')
+            ->cascadeOnDelete();
+
+        $table->string('university_number')->unique();
+        $table->string('phone', 50)->nullable();
+        $table->string('address')->nullable();
+        $table->boolean('is_dormitory')->default(false);
+        $table->unsignedTinyInteger('academic_year');
+        $table->string('device_token')->nullable()->unique();
+
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

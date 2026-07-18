@@ -1,0 +1,485 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+:root {
+    --smart-green: #184d42;
+    --smart-green-soft: #3d7065;
+    --smart-green-hover: #2a5d52;
+    --smart-gold: #d4a373;
+    --smart-background: #f8f9fa;
+    --smart-border: #e5e9e7;
+}
+
+/*
+|--------------------------------------------------------------------------
+| General page
+|--------------------------------------------------------------------------
+*/
+
+.fi-body,
+.fi-main,
+.fi-main-ctn {
+    background-color: var(--smart-background) !important;
+}
+
+.fi-main {
+    padding-top: 2rem !important;
+}
+
+.fi-header-heading {
+    color: var(--smart-green) !important;
+    font-weight: 700 !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Topbar
+|--------------------------------------------------------------------------
+*/
+
+.fi-topbar nav {
+    min-height: 4.5rem !important;
+    background-color: white !important;
+    border-bottom: 1px solid var(--smart-border) !important;
+    box-shadow: none !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Smart Attendance brand
+|--------------------------------------------------------------------------
+*/
+
+.smart-admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+
+    width: 100%;
+    min-width: 13rem;
+}
+
+.smart-admin-brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2.5rem;
+    height: 2.5rem;
+
+    flex-shrink: 0;
+
+    border-radius: 0.7rem;
+    background-color: var(--smart-green);
+
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.smart-admin-brand-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.smart-admin-brand-title {
+    color: var(--smart-green);
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.15rem;
+}
+
+.smart-admin-brand-subtitle {
+    margin-top: 0.1rem;
+
+    color: #7b8d88;
+    font-size: 0.65rem;
+    line-height: 0.9rem;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Sidebar
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar,
+.fi-sidebar-header,
+.fi-sidebar-nav {
+    background-color: var(--smart-green) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.fi-sidebar {
+    color: white !important;
+}
+
+.fi-sidebar-header {
+    min-height: 4.5rem !important;
+    padding: 0.75rem 1rem !important;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.fi-sidebar-nav {
+    padding: 1rem !important;
+}
+
+.fi-sidebar-nav > ul {
+    gap: 0 !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Navigation groups
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar-group {
+    margin-top: 1.1rem !important;
+    padding-top: 1.1rem !important;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.fi-sidebar-group-label,
+.fi-sidebar-group-collapse-button,
+.fi-sidebar-group-collapse-btn {
+    display: none !important;
+}
+
+.fi-sidebar-group-items {
+    gap: 0.25rem !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Navigation links
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar-item {
+    margin-bottom: 0.25rem !important;
+}
+
+.fi-sidebar-item-button,
+.fi-sidebar-item > a,
+.fi-sidebar-item > button {
+    min-height: 2.8rem !important;
+
+    padding: 0.72rem 1rem !important;
+
+    border-radius: 0.75rem !important;
+
+    background-color: transparent !important;
+    box-shadow: none !important;
+
+    color: rgba(255, 255, 255, 0.74) !important;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease !important;
+}
+
+.fi-sidebar-item-button:hover,
+.fi-sidebar-item > a:hover,
+.fi-sidebar-item > button:hover {
+    background-color:
+        rgba(255, 255, 255, 0.08) !important;
+
+    color: white !important;
+}
+
+.fi-sidebar-item-label {
+    color: inherit !important;
+
+    font-size: 0.85rem !important;
+    font-weight: 400 !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Active navigation link
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-button,
+.fi-sidebar-item-button.fi-active,
+.fi-sidebar-item > a[aria-current="page"],
+.fi-sidebar-item > button[aria-current="page"] {
+    background-color: var(--smart-green-soft) !important;
+    color: white !important;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-label,
+.fi-sidebar-item-button.fi-active .fi-sidebar-item-label,
+.fi-sidebar-item [aria-current="page"] .fi-sidebar-item-label {
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Hide sidebar icons
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar-item-icon {
+    display: none !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN badge
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar .fi-badge {
+    border: 0 !important;
+
+    background-color: var(--smart-gold) !important;
+    color: var(--smart-green) !important;
+
+    font-size: 0.55rem !important;
+    font-weight: 800 !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Sidebar logout
+|--------------------------------------------------------------------------
+*/
+
+.smart-sidebar-footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.12);
+}
+
+.smart-sidebar-logout {
+    width: 100%;
+    min-height: 2.8rem;
+
+    border: 0;
+    border-radius: 0.75rem;
+
+    background-color: transparent;
+
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 0.85rem;
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.smart-sidebar-logout:hover {
+    background-color:
+        rgba(255, 255, 255, 0.08);
+
+    color: white;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Sidebar scrollbar
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+
+    background-color:
+        rgba(255, 255, 255, 0.16);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tables and forms
+|--------------------------------------------------------------------------
+*/
+
+.fi-section,
+.fi-ta-ctn {
+    border: 1px solid var(--smart-border) !important;
+    border-radius: 1rem !important;
+
+    box-shadow:
+        0 4px 18px rgba(24, 77, 66, 0.05) !important;
+}
+
+.fi-btn {
+    border-radius: 0.75rem !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Dark mode
+|--------------------------------------------------------------------------
+*/
+
+.dark .fi-body,
+.dark .fi-main,
+.dark .fi-main-ctn {
+    background-color: #101312 !important;
+}
+
+.dark .fi-header-heading {
+    color: white !important;
+}
+
+.dark .fi-topbar nav {
+    background-color: #171a19 !important;
+    border-bottom-color:
+        rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .fi-sidebar,
+.dark .fi-sidebar-header,
+.dark .fi-sidebar-nav {
+    background-color: var(--smart-green) !important;
+}
+
+.dark .fi-section,
+.dark .fi-ta-ctn {
+    border-color:
+        rgba(255, 255, 255, 0.08) !important;
+
+    box-shadow: none !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Responsive
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 1023px) {
+    .smart-admin-brand {
+        min-width: 0;
+    }
+}
+/*
+|--------------------------------------------------------------------------
+| External theme toggle
+|--------------------------------------------------------------------------
+*/
+
+.smart-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2.8rem;
+    height: 2.8rem;
+
+    margin-inline-end: 0.75rem;
+
+    border: 1px solid #dfe6e3;
+    border-radius: 999px;
+
+    background-color: white;
+    color: var(--smart-green);
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 16px rgba(24, 77, 66, 0.1);
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.smart-theme-toggle:hover {
+    transform: translateY(-2px);
+
+    background-color: #f1f7f5;
+}
+
+.smart-theme-toggle svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Dark appearance
+|--------------------------------------------------------------------------
+*/
+
+.dark .smart-theme-toggle {
+    border-color: rgba(255, 255, 255, 0.1);
+
+    background-color: #1d2220;
+    color: #7eb6a9;
+
+    box-shadow: none;
+}
+
+.dark .smart-theme-toggle:hover {
+    background-color: #272d2a;
+}
+
+.dark .fi-topbar nav {
+    background-color: #171a19 !important;
+}
+
+.dark .smart-admin-brand-title {
+    color: white;
+}
+
+.dark .smart-admin-brand-subtitle {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.dark .smart-admin-brand-mark {
+    background-color: var(--smart-green);
+}
+/*
+|--------------------------------------------------------------------------
+| Hide Filament duplicated account menu
+|--------------------------------------------------------------------------
+*/
+
+.fi-topbar .fi-user-menu {
+    display: none !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Theme button position
+|--------------------------------------------------------------------------
+*/
+
+.fi-topbar .smart-theme-toggle {
+    order: 999;
+
+    width: 2.7rem;
+    height: 2.7rem;
+
+    margin-inline-start: 0.75rem;
+    margin-inline-end: 1rem;
+
+    flex-shrink: 0;
+}

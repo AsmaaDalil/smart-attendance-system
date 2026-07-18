@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -24,30 +25,30 @@ class AuthenticatedSessionController extends Controller
      */
    public function store(LoginRequest $request): RedirectResponse
 {
-    // هاد السطر بيعمل التحقق، إذا فشل بيعمل Throw لـ ValidationException وبيرجعك لصفحة الـ Login
     $request->authenticate();
 
     $request->session()->regenerate();
 
-    // هون التوجيه بناءً على الدور
     $user = Auth::user();
-    if ($user->role === 'professor') {
-        return redirect()->intended('/admin-dashboard');
-    }
-    return redirect()->intended('/student-scanner');
+
+    return match ($user->role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'professor' => redirect()->route('professor.dashboard'),
+        'student' => redirect()->route('student.scanner'),
+        default => abort(403, 'دور المستخدم غير معروف.'),
+    };
 }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
-    {
-        Auth::guard('web')->logout();
+public function destroy(Request $request): RedirectResponse
+{
+    Auth::guard('web')->logout();
 
-        $request->session()->invalidate();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-        $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
+    return redirect()->route('login');
+}
 }

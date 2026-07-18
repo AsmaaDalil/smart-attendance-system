@@ -11,16 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendance_records', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained('students');
-            $table->foreignId('session_id')->constrained('attendance_sessions');
-            $table->timestamp('scanned_at');
-            $table->enum('status', ['Present', 'Late', 'Absent', 'Excused']);
-            $table->float('distance_meters');
-            $table->tinyInteger('is_dorm_approved');
-            $table->timestamps();
-        });
+   Schema::create('attendance_records', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('student_id')
+        ->constrained('students')
+        ->cascadeOnDelete();
+
+    $table->foreignId('session_id')
+        ->constrained('attendance_sessions')
+        ->cascadeOnDelete();
+
+$table->dateTime('scanned_at')->nullable();
+    $table->enum('status', [
+        'Present',
+        'Late',
+        'Absent',
+        'Excused'
+    ])->default('Absent');
+
+    $table->decimal('distance_meters', 8, 2)->nullable();
+    $table->boolean('is_dorm_approved')->default(false);
+
+    $table->timestamps();
+
+    $table->unique(['student_id', 'session_id']);
+});
     }
 
     /**

@@ -11,14 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('excuses', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('attendance_record_id')->constrained('attendance_records');
-            $table->text('reason');
-            $table->string('file_path');
-            $table->enum('status', ['Pending', 'Approved', 'Rejected']);
-            $table->timestamps();
-        });
+Schema::create('excuses', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('attendance_record_id')
+        ->unique()
+        ->constrained('attendance_records')
+        ->cascadeOnDelete();
+
+    $table->text('reason');
+    $table->string('file_path')->nullable();
+
+    $table->enum('status', [
+        'Pending',
+        'Approved',
+        'Rejected'
+    ])->default('Pending');
+
+    $table->timestamps();
+});
     }
 
     /**

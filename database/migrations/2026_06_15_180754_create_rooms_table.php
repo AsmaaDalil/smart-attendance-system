@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rooms', function (Blueprint $table) {
-            $table->id();
-             $table->string('room_name');
-             $table->decimal('latitude', 10, 8);
-             $table->decimal('longitude', 11, 8);
-             $table->timestamps();
-        });
+       Schema::create('rooms', function (Blueprint $table) {
+    $table->id();
+    $table->string('room_name');
+    $table->decimal('latitude', 10, 8);
+    $table->decimal('longitude', 11, 8);
+    $table->unsignedInteger('allowed_radius')->default(30);
+    $table->timestamps();
+});
     }
 
     /**

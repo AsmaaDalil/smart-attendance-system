@@ -1,3 +1,81 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "@tailwindcss/forms";
+
+@source "../views/**/*.blade.php";
+@source "../../app/Filament/**/*.php";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+|--------------------------------------------------------------------------
+| General theme transitions
+|--------------------------------------------------------------------------
+*/
+
+html {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
+}
+
+body {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Dark mode
+|--------------------------------------------------------------------------
+*/
+
+html.dark body {
+    background-color: #0f1110 !important;
+    color: #f3f4f6;
+}
+
+html.dark [class*="bg-[#f8f9fa]"] {
+    background-color: #0f1110 !important;
+}
+
+html.dark [class*="bg-white"] {
+    background-color: #191c1b !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700 {
+    color: #f3f4f6 !important;
+}
+
+html.dark .text-gray-600,
+html.dark .text-gray-500 {
+    color: #a7afac !important;
+}
+
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+    background-color: #121514 !important;
+    color: #f3f4f6 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #737b78 !important;
+}
+
+[x-cloak] {
+    display: none !important;
+}

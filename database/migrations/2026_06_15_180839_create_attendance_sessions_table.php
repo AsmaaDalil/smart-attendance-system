@@ -11,17 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendance_sessions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('subject_id')->constrained();
-            $table->foreignId('room_id')->constrained();
-            $table->integer('lecture_number');
-            $table->string('lecture_title');
-            $table->text('qr_current_code')->nullable();
-            $table->timestamp('start_time');
-            $table->timestamp('end_time')->nullable();
-            $table->timestamps();
-        });
+ Schema::create('attendance_sessions', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('subject_id')
+        ->constrained('subjects')
+        ->cascadeOnDelete();
+
+    $table->foreignId('room_id')
+        ->constrained('rooms')
+        ->restrictOnDelete();
+
+    $table->unsignedInteger('lecture_number');
+    $table->string('lecture_title');
+
+    $table->text('qr_current_code')->nullable();
+    $table->dateTime('qr_expires_at')->nullable();
+$table->dateTime('start_time');
+$table->dateTime('end_time')->nullable();
+    $table->enum('status', [
+        'Active',
+        'Ended'
+    ])->default('Active');
+
+    $table->timestamps();
+});
     }
 
     /**
