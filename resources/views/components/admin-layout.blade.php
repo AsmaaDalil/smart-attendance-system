@@ -168,7 +168,7 @@
             </a>
 
             <a
-                href="#"
+               href="{{ url('/admin/excuses') }}"
                 class="block rounded-xl px-4 py-2.5
                        text-sm text-white/65 transition
                        hover:bg-white/10 hover:text-white"

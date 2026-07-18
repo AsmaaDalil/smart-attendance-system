@@ -31,9 +31,8 @@ class AttendanceRecordResource extends Resource
     protected static ?string $pluralModelLabel =
         'Attendance Records';
 
-    protected static string|UnitEnum|null $navigationGroup =
-        'Attendance Management';
-
+protected static string|UnitEnum|null $navigationGroup =
+    'Academic Management';
     protected static ?int $navigationSort = 6;
 
     protected static ?string $recordTitleAttribute =
