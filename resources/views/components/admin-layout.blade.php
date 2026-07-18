@@ -159,7 +159,7 @@
             <div class="my-3 h-px bg-white/10"></div>
 
             <a
-                href="#"
+               href="{{ url('/admin/attendance-records') }}"
                 class="block rounded-xl px-4 py-2.5
                        text-sm text-white/65 transition
                        hover:bg-white/10 hover:text-white"

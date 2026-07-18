@@ -483,3 +483,11 @@
 
     flex-shrink: 0;
 }
+.fi-sidebar-group {
+    margin-top: 0.25rem !important;
+    padding-top: 0.25rem !important;
+}
+
+.fi-sidebar-group + .fi-sidebar-group {
+    margin-top: 0.25rem !important;
+}
