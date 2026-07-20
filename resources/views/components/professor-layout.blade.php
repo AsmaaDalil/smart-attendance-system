@@ -38,38 +38,103 @@
                 Dashboard
             </a>
 
-            <a href="#"
-               class="block p-4 rounded-2xl hover:bg-white/10 transition">
-                My Subjects
-            </a>
+           <a
+    href="{{ route('professor.subjects.index') }}"
+    class="block rounded-xl px-4 py-3
+           text-sm transition
+           {{
+               request()->routeIs('professor.subjects.*')
+                   ? 'bg-white/15 font-semibold text-white'
+                   : 'text-white/75 hover:bg-white/10 hover:text-white'
+           }}"
+>
+    My Subjects
+</a>
 
-            <a href="#"
-               class="block p-4 rounded-2xl hover:bg-white/10 transition">
-                Start Session
-            </a>
+           <a
+    href="{{ route('professor.sessions.create') }}"
+    class="block rounded-xl px-4 py-3
+           text-sm text-white/75 transition
+           hover:bg-white/10 hover:text-white
+           {{ request()->routeIs('professor.sessions.create')
+                ? 'bg-white/15 text-white'
+                : '' }}"
+>
+    Start Session
+</a>
 
-            <a href="#"
-               class="block p-4 rounded-2xl hover:bg-white/10 transition">
-                Active Session
-            </a>
+          <a
+    href="{{ route('professor.sessions.index') }}"
+    class="block rounded-xl px-4 py-3
+           text-sm transition
+           {{
+               request()->routeIs('professor.sessions.index')
+               || request()->routeIs('professor.sessions.show')
+                   ? 'bg-white/15 font-semibold text-white'
+                   : 'text-white/75 hover:bg-white/10 hover:text-white'
+           }}"
+>
+    Active Session
+</a>
 
-            <a href="#"
-               class="block p-4 rounded-2xl hover:bg-white/10 transition">
-                Attendance
-            </a>
+<a
+    href="{{ route('professor.attendance.index') }}"
+    class="block rounded-xl px-4 py-3
+           text-sm transition
+           {{
+               request()->routeIs(
+                   'professor.attendance.*'
+               )
+                   ? 'bg-white/15 font-semibold text-white'
+                   : 'text-white/75 hover:bg-white/10 hover:text-white'
+           }}"
+>
+    Attendance
+</a>
 
-            <a href="#"
-               class="block p-4 rounded-2xl hover:bg-white/10 transition">
-                Excuses
-            </a>
-
-            <a href="#"
-               class="block p-4 rounded-2xl hover:bg-white/10 transition">
-                Reports
-            </a>
+          <a
+    href="{{ route('professor.excuses.index') }}"
+    class="block rounded-xl px-4 py-3 text-sm transition
+           {{
+               request()->routeIs('professor.excuses.*')
+                   ? 'bg-white/15 font-semibold text-white'
+                   : 'text-white/75 hover:bg-white/10 hover:text-white'
+           }}"
+>
+    Excuses
+</a>
+<a
+    href="{{ route('professor.reports.index') }}"
+    class="block rounded-xl px-4 py-3 text-sm transition
+           {{
+               request()->routeIs('professor.reports.*')
+                   ? 'bg-white/15 font-semibold text-white'
+                   : 'text-white/75 hover:bg-white/10 hover:text-white'
+           }}"
+>
+    Reports
+</a>
 
         </nav>
+<div class="mt-auto border-t border-white/10 p-4">
+    <form
+        method="POST"
+        action="{{ route('logout') }}"
+    >
+        @csrf
 
+        <button
+            type="submit"
+            class="w-full rounded-xl px-4 py-3
+                   text-sm font-medium text-white/70
+                   transition
+                   hover:bg-red-500/15
+                   hover:text-red-200"
+        >
+            Logout
+        </button>
+    </form>
+</div>
     </aside>
 
     <main class="flex-1 min-w-0">
@@ -77,6 +142,6 @@
     </main>
 
 </div>
-
+@stack('scripts')
 </body>
 </html>

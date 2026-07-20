@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Professor;
 
-use App\Exports\AttendanceReportExport;
-use App\Exports\StudentAttendanceSummaryExport;
+use App\Exports\ProfessorAttendanceReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceRecord;
 use App\Models\Subject;
@@ -12,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ReportController extends Controller
 {
     /**
-     * Display the administrator reports page.
+     * Display the professor attendance reports page.
      */
     public function index(Request $request): View
     {
@@ -36,68 +36,42 @@ class ReportController extends Controller
 
         $summary = $this->makeSummary($allRecords);
 
-        $studentSummaries =
-            StudentAttendanceSummaryExport::build(
-                $filters
-            );
-
-        $warningCount = $studentSummaries
-            ->where('is_warning', true)
-            ->count();
-
         $subjects = Subject::query()
+            ->where('user_id', auth()->id())
             ->orderBy('subject_name')
             ->get();
 
         return view(
-            'admin.reports.index',
+            'professor.reports.index',
             compact(
                 'records',
                 'summary',
                 'subjects',
-                'filters',
-                'studentSummaries',
-                'warningCount'
+                'filters'
             )
         );
     }
 
     /**
-     * Export the detailed attendance report as Excel.
+     * Export the filtered attendance report as Excel.
      */
-    public function excel(
-        Request $request
-    ): BinaryFileResponse {
+    public function excel(Request $request): BinaryFileResponse
+    {
         $filters = $this->getFilters($request);
 
         return Excel::download(
-            new AttendanceReportExport($filters),
-            'attendance-report-'
-                .now()->format('Y-m-d-His')
-                .'.xlsx'
-        );
-    }
-
-    /**
-     * Export student attendance summaries and warnings as Excel.
-     */
-    public function warningsExcel(
-        Request $request
-    ): BinaryFileResponse {
-        $filters = $this->getFilters($request);
-
-        return Excel::download(
-            new StudentAttendanceSummaryExport(
-                $filters
+            new ProfessorAttendanceReportExport(
+                $filters,
+                auth()->id()
             ),
-            'student-attendance-summary-'
+            'professor-attendance-report-'
                 .now()->format('Y-m-d-His')
                 .'.xlsx'
         );
     }
 
     /**
-     * Export the detailed attendance report as PDF.
+     * Export the filtered attendance report as PDF.
      */
     public function pdf(Request $request): Response
     {
@@ -109,57 +83,65 @@ class ReportController extends Controller
 
         $summary = $this->makeSummary($records);
 
-        $studentSummaries =
-            StudentAttendanceSummaryExport::build(
-                $filters
-            );
-
         $subject = filled($filters['subject_id'])
             ? Subject::query()
+                ->where('user_id', auth()->id())
                 ->find($filters['subject_id'])
             : null;
 
         /*
-         * نرسل دالة معالجة العربي إلى قالب PDF.
+         * تُرسل هذه الدالة إلى ملف Blade حتى نعالج
+         * النصوص العربية قبل عرضها داخل PDF.
          */
         $shapeArabic = fn (?string $text): string =>
             $this->shapeArabic($text);
 
         return Pdf::loadView(
-            'admin.reports.pdf.attendance',
+            'professor.reports.pdf.attendance',
             compact(
                 'records',
                 'summary',
                 'filters',
                 'subject',
-                'studentSummaries',
                 'shapeArabic'
             )
         )
             ->setPaper('a4', 'landscape')
             ->download(
-                'attendance-report-'
-                    .now()->format('Y-m-d-His')
-                    .'.pdf'
+                'professor-attendance-report-'
+                .now()->format('Y-m-d-His')
+                .'.pdf'
             );
     }
 
     /**
-     * Validate report filters.
+     * Validate and return report filters.
      */
-    private function getFilters(
-        Request $request
-    ): array {
+    private function getFilters(Request $request): array
+    {
         $validated = $request->validate([
             'subject_id' => [
                 'nullable',
                 'integer',
-                'exists:subjects,id',
+
+                Rule::exists('subjects', 'id')
+                    ->where(
+                        fn ($query) =>
+                            $query->where(
+                                'user_id',
+                                auth()->id()
+                            )
+                    ),
             ],
 
             'status' => [
                 'nullable',
-                'in:Present,Late,Absent,Excused',
+                Rule::in([
+                    'Present',
+                    'Late',
+                    'Absent',
+                    'Excused',
+                ]),
             ],
 
             'from' => [
@@ -190,12 +172,19 @@ class ReportController extends Controller
     }
 
     /**
-     * Build the filtered attendance query.
+     * Build an attendance query restricted to the current professor.
      */
-    private function attendanceQuery(
-        array $filters
-    ): Builder {
+    private function attendanceQuery(array $filters): Builder
+    {
         return AttendanceRecord::query()
+            ->whereHas(
+                'session.subject',
+                fn (Builder $query): Builder =>
+                    $query->where(
+                        'user_id',
+                        auth()->id()
+                    )
+            )
             ->with([
                 'student.user',
                 'session.subject',
@@ -232,36 +221,49 @@ class ReportController extends Controller
             )
             ->when(
                 filled($filters['from']),
-                fn (
+                function (
                     Builder $query,
                     $date
-                ): Builder =>
-                    $query->whereDate(
-                        'created_at',
-                        '>=',
-                        $date
-                    )
+                ): Builder {
+                    return $query->whereHas(
+                        'session',
+                        fn (
+                            Builder $sessionQuery
+                        ): Builder =>
+                            $sessionQuery->whereDate(
+                                'start_time',
+                                '>=',
+                                $date
+                            )
+                    );
+                }
             )
             ->when(
                 filled($filters['until']),
-                fn (
+                function (
                     Builder $query,
                     $date
-                ): Builder =>
-                    $query->whereDate(
-                        'created_at',
-                        '<=',
-                        $date
-                    )
+                ): Builder {
+                    return $query->whereHas(
+                        'session',
+                        fn (
+                            Builder $sessionQuery
+                        ): Builder =>
+                            $sessionQuery->whereDate(
+                                'start_time',
+                                '<=',
+                                $date
+                            )
+                    );
+                }
             );
     }
 
     /**
-     * Generate the attendance summary.
+     * Generate attendance report summary.
      */
-    private function makeSummary(
-        Collection $records
-    ): array {
+    private function makeSummary(Collection $records): array
+    {
         $total = $records->count();
 
         $present = $records
@@ -298,12 +300,16 @@ class ReportController extends Controller
     }
 
     /**
-     * Safely prepare Arabic text for DomPDF.
+     * Safely shape Arabic text for DomPDF.
      */
     private function shapeArabic(?string $text): string
     {
         $text = trim((string) $text);
 
+        /*
+         * لا تحتاج النصوص الفارغة أو الإنجليزية
+         * إلى معالجة من مكتبة اللغة العربية.
+         */
         if (
             $text === ''
             || ! preg_match('/\p{Arabic}/u', $text)
@@ -315,9 +321,9 @@ class ReportController extends Controller
             $arabic = new Arabic();
 
             /*
-             * المسافتان تمنعان خطأ:
+             * نضيف مسافة في البداية والنهاية لتجنب خطأ:
              * Undefined array key -1
-             * مع بعض الكلمات العربية القصيرة.
+             * الذي قد يظهر مع بعض الكلمات القصيرة.
              */
             $shapedText = $arabic->utf8Glyphs(
                 ' '.$text.' ',
@@ -329,8 +335,8 @@ class ReportController extends Controller
             return trim($shapedText);
         } catch (\Throwable $exception) {
             /*
-             * لا نوقف تصدير PDF إذا فشلت
-             * معالجة نص عربي معين.
+             * لا نوقف تصدير التقرير كاملًا إذا لم تستطع
+             * المكتبة معالجة كلمة عربية معينة.
              */
             report($exception);
 

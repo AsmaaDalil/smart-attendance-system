@@ -7,7 +7,7 @@
 
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: "DejaVu Sans", sans-serif;
             color: #24342f;
             font-size: 11px;
         }
@@ -22,9 +22,16 @@
             margin-bottom: 20px;
         }
 
+        .arabic {
+            font-family: "DejaVu Sans", sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+
         .summary {
             width: 100%;
             margin-bottom: 20px;
+            border-collapse: collapse;
         }
 
         .summary td {
@@ -48,6 +55,13 @@
         .records td {
             padding: 8px;
             border-bottom: 1px solid #dce5e1;
+            vertical-align: middle;
+        }
+
+        .empty-message {
+            padding: 30px;
+            color: #66756f;
+            text-align: center;
         }
     </style>
 </head>
@@ -58,20 +72,60 @@
 
     <div class="meta">
         Subject:
-        {{ $subject?->subject_name ?? 'All Subjects' }}
+
+        @if ($subject)
+            <span class="arabic">
+                {{ $shapeArabic($subject->subject_name) }}
+            </span>
+        @else
+            All Subjects
+        @endif
+
         |
+
         Generated:
         {{ now()->format('Y-m-d H:i') }}
     </div>
 
     <table class="summary">
         <tr>
-            <td>Total<br><strong>{{ $summary['total'] }}</strong></td>
-            <td>Present<br><strong>{{ $summary['present'] }}</strong></td>
-            <td>Late<br><strong>{{ $summary['late'] }}</strong></td>
-            <td>Absent<br><strong>{{ $summary['absent'] }}</strong></td>
-            <td>Excused<br><strong>{{ $summary['excused'] }}</strong></td>
-            <td>Rate<br><strong>{{ $summary['attendance_rate'] }}%</strong></td>
+            <td>
+                Total
+                <br>
+                <strong>{{ $summary['total'] }}</strong>
+            </td>
+
+            <td>
+                Present
+                <br>
+                <strong>{{ $summary['present'] }}</strong>
+            </td>
+
+            <td>
+                Late
+                <br>
+                <strong>{{ $summary['late'] }}</strong>
+            </td>
+
+            <td>
+                Absent
+                <br>
+                <strong>{{ $summary['absent'] }}</strong>
+            </td>
+
+            <td>
+                Excused
+                <br>
+                <strong>{{ $summary['excused'] }}</strong>
+            </td>
+
+            <td>
+                Rate
+                <br>
+                <strong>
+                    {{ $summary['attendance_rate'] }}%
+                </strong>
+            </td>
         </tr>
     </table>
 
@@ -89,21 +143,66 @@
         </thead>
 
         <tbody>
-            @foreach ($records as $record)
+            @forelse ($records as $record)
                 <tr>
-                    <td>{{ $record->student->user->name }}</td>
-                    <td>{{ $record->student->university_number }}</td>
-                    <td>{{ $record->session->subject->subject_name }}</td>
-                    <td>{{ $record->session->lecture_title }}</td>
-                    <td>{{ $record->status }}</td>
-                    <td>
-                        {{ $record->scanned_at?->format('Y-m-d H:i:s') ?? 'Not scanned' }}
+                    <td class="arabic">
+                        {{ $shapeArabic(
+                            $record->student?->user?->name
+                            ?? 'Unknown student'
+                        ) }}
                     </td>
+
                     <td>
-                        {{ $record->distance_meters ?? 'Not recorded' }}
+                        {{
+                            $record->student?->university_number
+                            ?? '-'
+                        }}
+                    </td>
+
+                    <td class="arabic">
+                        {{ $shapeArabic(
+                            $record->session?->subject?->subject_name
+                            ?? 'Unknown subject'
+                        ) }}
+                    </td>
+
+                    <td class="arabic">
+                        {{ $shapeArabic(
+                            $record->session?->lecture_title
+                            ?? 'Unknown lecture'
+                        ) }}
+                    </td>
+
+                    <td>
+                        {{ $record->status }}
+                    </td>
+
+                    <td>
+                        {{
+                            $record->scanned_at?->format(
+                                'Y-m-d H:i:s'
+                            ) ?? 'Not scanned'
+                        }}
+                    </td>
+
+                    <td>
+                        @if ($record->distance_meters !== null)
+                            {{ $record->distance_meters }} m
+                        @else
+                            Not recorded
+                        @endif
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td
+                        colspan="7"
+                        class="empty-message"
+                    >
+                        No attendance records found.
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 
