@@ -39,7 +39,7 @@ class AttendanceSessionController extends Controller
 
         $activeSessions = AttendanceSession::query()
             ->whereHas(
-                'subject',
+            'subject',
                 fn ($query) =>
                     $query->where('user_id', auth()->id())
             )

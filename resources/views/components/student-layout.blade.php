@@ -1,20 +1,599 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full w-full scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}"
+    >
 
     <title>Smart Attendance - Student</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Keep The Saved Light/Dark Mode Before The Page Appears --}}
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem(
+                'smart-attendance-theme'
+            );
+
+            const prefersDark = window.matchMedia(
+                '(prefers-color-scheme: dark)'
+            ).matches;
+
+            document.documentElement.classList.toggle(
+                'dark',
+                savedTheme === 'dark'
+                || (! savedTheme && prefersDark)
+            );
+        })();
+    </script>
+
+    @vite([
+        'resources/css/app.css',
+        'resources/js/app.js'
+    ])
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-width: 0;
+            max-width: none;
+            min-height: 100%;
+            margin: 0;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .student-interface h1,
+        .student-interface h2,
+        .student-interface h3,
+        .student-interface h4,
+        .student-interface h5,
+        .student-interface nav a,
+        .student-interface label,
+        .student-interface button,
+        .student-interface .title-case {
+            text-transform: capitalize;
+        }
+
+        /*
+         * Mobile And Tablet Header
+         */
+        #studentMobileHeader {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            width: auto;
+            min-width: 0;
+            max-width: none;
+            margin: 0;
+        }
+
+        /*
+         * Sidebar Is Hidden On Mobile And Tablet
+         */
+        #studentSidebar {
+            height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
+            transform: translateX(-100%);
+            transition: transform 0.28s ease;
+            will-change: transform;
+        }
+
+        #studentSidebarOverlay {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition:
+                opacity 0.28s ease,
+                visibility 0.28s ease;
+        }
+
+        body.student-sidebar-open #studentSidebar {
+            transform: translateX(0);
+        }
+
+        body.student-sidebar-open #studentSidebarOverlay {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /*
+         * Page Content Uses Full Width On Mobile And Tablet
+         */
+        #studentPageContent {
+            width: 100%;
+            min-width: 0;
+            max-width: none;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 4rem;
+            overflow-x: hidden;
+        }
+
+        #studentPageContent > * {
+            width: 100%;
+            min-width: 0;
+            max-width: none;
+        }
+
+        /*
+         * The Theme Control Must Stay Content-Sized.
+         * This Overrides The General Full-Width Child Rule Above.
+         */
+        #studentThemeControl {
+            width: auto;
+            min-width: auto;
+            max-width: none;
+        }
+
+        /*
+         * Laptop And Desktop
+         */
+        @media (min-width: 1024px) {
+            #studentSidebar {
+                transform: translateX(0);
+            }
+
+            #studentSidebarOverlay,
+            #studentMobileHeader,
+            #closeStudentSidebar {
+                display: none;
+            }
+
+            #studentPageContent {
+                width: calc(100% - 18rem);
+                margin-left: 18rem;
+                padding-top: 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #studentSidebar,
+            #studentSidebarOverlay {
+                transition: none;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-[#f8f9fa]" style="font-family: Poppins, sans-serif;">
-<x-theme-toggle />
+<body
+    class="student-interface min-h-screen w-full min-w-0
+           max-w-none overflow-x-hidden
+           bg-[#f8f9fa] text-gray-800
+           transition-colors duration-300
+           dark:bg-[#0f1110] dark:text-gray-100"
+    style="font-family: Poppins, sans-serif;"
+>
+
+{{-- Mobile And Tablet Navbar --}}
+<header
+    id="studentMobileHeader"
+    class="fixed inset-x-0 top-0 z-30 flex h-16
+           w-full min-w-0 max-w-none items-center
+           justify-between border-b border-gray-200
+           bg-white px-4 shadow-sm
+           transition-colors duration-300 sm:px-6
+           dark:border-white/10 dark:bg-[#171a19]"
+>
+    <div class="min-w-0">
+        <h1
+            class="truncate text-lg font-bold
+                   text-[#184d42] sm:text-xl
+                   dark:text-white"
+        >
+            Smart Attendance
+        </h1>
+
+        <p
+            class="text-sm text-gray-500
+                   dark:text-gray-400"
+        >
+            Student Portal
+        </p>
+    </div>
+
+    <button
+        id="openStudentSidebar"
+        type="button"
+        aria-label="Open Navigation"
+        aria-controls="studentSidebar"
+        aria-expanded="false"
+        class="ml-3 flex h-10 w-10 flex-shrink-0
+               items-center justify-center rounded-xl
+               bg-[#184d42] text-white shadow-sm
+               transition hover:bg-[#24584d]
+               focus:outline-none focus:ring-2
+               focus:ring-[#d4a373]/70"
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+            />
+        </svg>
+    </button>
+</header>
+
+{{-- Mobile And Tablet Overlay --}}
+<div
+    id="studentSidebarOverlay"
+    class="fixed inset-0 z-40
+           bg-black/45 backdrop-blur-[1px]"
+></div>
+
+{{-- Student Sidebar --}}
+<aside
+    id="studentSidebar"
+    class="fixed inset-y-0 left-0 z-50
+           flex w-72 max-w-[86vw]
+           flex-col overflow-hidden
+           bg-[#1a4a40] text-white shadow-2xl"
+>
+    {{-- Brand --}}
+    <div
+        class="flex min-h-24 flex-shrink-0
+               items-center justify-between
+               border-b border-white/10 px-6"
+    >
+        <div class="min-w-0">
+            <h1 class="truncate text-2xl font-bold">
+                Smart Attendance
+            </h1>
+
+            <p class="mt-1 text-sm text-white/60">
+                Student Portal
+            </p>
+        </div>
+
+        <button
+            id="closeStudentSidebar"
+            type="button"
+            aria-label="Close Navigation"
+            class="ml-3 flex h-9 w-9 flex-shrink-0
+                   items-center justify-center rounded-xl
+                   bg-white/10 text-white transition
+                   hover:bg-white/20 focus:outline-none
+                   focus:ring-2 focus:ring-white/40"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                />
+            </svg>
+        </button>
+    </div>
+
+    {{-- Navigation --}}
+    <nav
+        class="min-h-0 flex-1 space-y-1.5
+               overflow-y-auto p-4"
+    >
+        <a
+            href="{{ route('student.dashboard') }}"
+            class="student-nav-link block rounded-xl
+                   px-4 py-3 text-lg transition
+                   {{
+                       request()->routeIs('student.dashboard')
+                           ? 'bg-white/15 font-semibold text-white'
+                           : 'text-white/75 hover:bg-white/10 hover:text-white'
+                   }}"
+        >
+            Dashboard
+        </a>
+
+        <a
+            href="{{ route('student.scanner') }}"
+            class="student-nav-link block rounded-xl
+                   px-4 py-3 text-lg transition
+                   {{
+                       request()->routeIs('student.scanner')
+                       || request()->routeIs(
+                           'student.attendance.scan'
+                       )
+                           ? 'bg-white/15 font-semibold text-white'
+                           : 'text-white/75 hover:bg-white/10 hover:text-white'
+                   }}"
+        >
+            Scan QR
+        </a>
+
+        @if (
+            \Illuminate\Support\Facades\Route::has(
+                'student.attendance.index'
+            )
+        )
+            <a
+                href="{{ route(
+                    'student.attendance.index'
+                ) }}"
+                class="student-nav-link block rounded-xl
+                       px-4 py-3 text-lg transition
+                       {{
+                           request()->routeIs(
+                               'student.attendance.*'
+                           )
+                               ? 'bg-white/15 font-semibold text-white'
+                               : 'text-white/75 hover:bg-white/10 hover:text-white'
+                       }}"
+            >
+                Attendance History
+            </a>
+        @endif
+
+        @if (
+            \Illuminate\Support\Facades\Route::has(
+                'student.excuses.index'
+            )
+        )
+            <a
+                href="{{ route(
+                    'student.excuses.index'
+                ) }}"
+                class="student-nav-link block rounded-xl
+                       px-4 py-3 text-lg transition
+                       {{
+                           request()->routeIs(
+                               'student.excuses.*'
+                           )
+                               ? 'bg-white/15 font-semibold text-white'
+                               : 'text-white/75 hover:bg-white/10 hover:text-white'
+                       }}"
+            >
+                Excuses
+            </a>
+        @endif
+
+        @if (
+            \Illuminate\Support\Facades\Route::has(
+                'student.profile.edit'
+            )
+        )
+            <a
+                href="{{ route(
+                    'student.profile.edit'
+                ) }}"
+                class="student-nav-link block rounded-xl
+                       px-4 py-3 text-lg transition
+                       {{
+                           request()->routeIs(
+                               'student.profile.*'
+                           )
+                               ? 'bg-white/15 font-semibold text-white'
+                               : 'text-white/75 hover:bg-white/10 hover:text-white'
+                       }}"
+            >
+                Profile
+            </a>
+        @endif
+    </nav>
+
+    {{-- Logout --}}
+    <div
+        class="flex-shrink-0
+               border-t border-white/10
+               px-4 pt-4"
+        style="padding-bottom:
+               calc(1rem + env(safe-area-inset-bottom));"
+    >
+        <form
+            method="POST"
+            action="{{ route('logout') }}"
+        >
+            @csrf
+
+            <button
+                type="submit"
+                class="w-full rounded-xl px-4 py-3
+                       text-lg font-medium text-white/70
+                       transition hover:bg-red-500/15
+                       hover:text-red-200"
+            >
+                Logout
+            </button>
+        </form>
+    </div>
+</aside>
+
+{{-- Main Student Content --}}
+<main
+    id="studentPageContent"
+    class="relative min-h-screen w-full min-w-0
+           max-w-none overflow-x-hidden"
+>
+    {{-- Keep The Theme Button Visible On Every Student Page --}}
+    @unless (request()->routeIs('student.dashboard'))
+        <div
+            id="studentThemeControl"
+            class="absolute right-4 top-20 z-30
+                   flex items-center gap-3
+                   sm:right-6 sm:top-24
+                   lg:right-8 lg:top-2"
+        >
+            {{-- Student Name And Role Like Dashboard --}}
+            <div class="hidden min-w-0 text-right sm:block">
+                <p
+                    class="max-w-44 truncate text-sm
+                           font-semibold leading-tight
+                           text-[#184d42]
+                           dark:text-white"
+                >
+                    {{ auth()->user()->name }}
+                </p>
+
+                <p
+                    class="mt-0.5 text-xs leading-tight
+                           text-gray-500
+                           dark:text-gray-400"
+                >
+                    Student
+                </p>
+            </div>
+
+            <x-theme-toggle />
+        </div>
+    @endunless
+
     {{ $slot }}
+</main>
+
+@stack('scripts')
+
+<script>
+    document.addEventListener(
+        'DOMContentLoaded',
+        function () {
+            const body = document.body;
+
+            const openButton =
+                document.getElementById(
+                    'openStudentSidebar'
+                );
+
+            const closeButton =
+                document.getElementById(
+                    'closeStudentSidebar'
+                );
+
+            const overlay =
+                document.getElementById(
+                    'studentSidebarOverlay'
+                );
+
+            const navigationLinks =
+                document.querySelectorAll(
+                    '.student-nav-link'
+                );
+
+            function setExpanded(isExpanded) {
+                openButton?.setAttribute(
+                    'aria-expanded',
+                    String(isExpanded)
+                );
+            }
+
+            function openSidebar() {
+                if (window.innerWidth >= 1024) {
+                    return;
+                }
+
+                body.classList.add(
+                    'student-sidebar-open',
+                    'overflow-hidden'
+                );
+
+                setExpanded(true);
+                closeButton?.focus();
+            }
+
+            function closeSidebar(
+                restoreFocus = false
+            ) {
+                body.classList.remove(
+                    'student-sidebar-open',
+                    'overflow-hidden'
+                );
+
+                setExpanded(false);
+
+                if (
+                    restoreFocus
+                    && window.innerWidth < 1024
+                ) {
+                    openButton?.focus();
+                }
+            }
+
+            openButton?.addEventListener(
+                'click',
+                openSidebar
+            );
+
+            closeButton?.addEventListener(
+                'click',
+                function () {
+                    closeSidebar(true);
+                }
+            );
+
+            overlay?.addEventListener(
+                'click',
+                function () {
+                    closeSidebar(true);
+                }
+            );
+
+            navigationLinks.forEach(
+                function (link) {
+                    link.addEventListener(
+                        'click',
+                        function () {
+                            closeSidebar(false);
+                        }
+                    );
+                }
+            );
+
+            document.addEventListener(
+                'keydown',
+                function (event) {
+                    if (event.key === 'Escape') {
+                        closeSidebar(true);
+                    }
+                }
+            );
+
+            window.addEventListener(
+                'resize',
+                function () {
+                    if (window.innerWidth >= 1024) {
+                        closeSidebar(false);
+                    }
+                }
+            );
+        }
+    );
+</script>
 
 </body>
 </html>
