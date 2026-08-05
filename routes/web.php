@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Professor\AttendanceController;
 use App\Http\Controllers\Professor\ExcuseController;
 use App\Http\Controllers\Professor\ReportController as ProfessorReportController;
+use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\AttendanceHistoryController;
+use App\Http\Controllers\Student\ExcuseController as StudentExcuseController;
+use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -281,11 +285,59 @@ Route::middleware([
     'auth',
     'role:student',
 ])->group(function () {
+    Route::get(
+        '/student-dashboard',
+        [StudentDashboardController::class, 'index']
+    )->name('student.dashboard');
+
     Route::get('/student-scanner', function () {
         return view('student.scanner');
     })->name('student.scanner');
-});
 
+    Route::get(
+    '/student/attendance',
+    [AttendanceHistoryController::class, 'index']
+)->name('student.attendance.index');
+
+    Route::post(
+        '/student/attendance/scan',
+        [
+            \App\Http\Controllers\Student\AttendanceScanController::class,
+            'store',
+        ]
+    )->name('student.attendance.scan');
+
+    Route::get(
+    '/student/excuses',
+    [StudentExcuseController::class, 'index']
+)->name('student.excuses.index');
+
+Route::get(
+    '/student/excuses/{attendanceRecord}/create',
+    [StudentExcuseController::class, 'create']
+)->name('student.excuses.create');
+
+Route::post(
+    '/student/excuses/{attendanceRecord}',
+    [StudentExcuseController::class, 'store']
+)->name('student.excuses.store');
+
+
+Route::get(
+    '/student/profile',
+    [StudentProfileController::class, 'edit']
+)->name('student.profile.edit');
+
+Route::patch(
+    '/student/profile',
+    [StudentProfileController::class, 'update']
+)->name('student.profile.update');
+
+Route::put(
+    '/student/profile/password',
+    [StudentProfileController::class, 'updatePassword']
+)->name('student.profile.password.update');
+});
 /*
 |--------------------------------------------------------------------------
 | الملف الشخصي

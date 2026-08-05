@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
-class ExcuseController extends Controller
+class ExcuseController extends Controller 
 {
     public function index(Request $request): View
     {
