@@ -13,6 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
+        // السماح لـ Laravel بالتعرف على رابط HTTPS القادم من Cloudflare Tunnel
+        $middleware->trustProxies(at: '*');
+
+        // أسماء الـ Middleware الخاصة بالمشروع
         $middleware->alias([
             'role' => RoleMiddleware::class,
         ]);

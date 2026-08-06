@@ -561,6 +561,17 @@
                                     .'dark:bg-emerald-500/10 '
                                     .'dark:text-emerald-300',
                             };
+
+                            $attendanceProgress = min(
+                                100,
+                                max(
+                                    0,
+                                    (float) (
+                                        $statistic['attendance_rate']
+                                        ?? 0
+                                    )
+                                )
+                            );
                         @endphp
 
                         <article
@@ -654,14 +665,7 @@
                                 <div
                                     class="h-full rounded-full
                                            bg-[#184d42]"
-                                    style="width: {{
-                                        min(
-                                            100,
-                                            $statistic[
-                                                'attendance_rate'
-                                            ]
-                                        )
-                                    }}%"
+                                    @style(["width: {$attendanceProgress}%"])
                                 ></div>
                             </div>
 

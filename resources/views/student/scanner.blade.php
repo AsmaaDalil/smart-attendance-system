@@ -1,43 +1,71 @@
 <x-student-layout>
 
-    <main class="p-6 lg:p-8">
+    <div class="w-full min-w-0 max-w-none p-4 sm:p-6 lg:p-8">
 
         <div class="mx-auto max-w-7xl">
 
             {{-- Page header --}}
-            <div class="mb-7 flex flex-wrap
-                        items-center justify-between gap-4">
-
-                <div>
-                    <h1 class="text-3xl font-bold
-                               text-[#184d42]
-                               dark:text-white">
+            <header
+                class="mb-6 flex items-start justify-between gap-4
+                       sm:items-center"
+            >
+                <div class="min-w-0">
+                    <h1
+                        class="text-2xl font-bold leading-tight
+                               text-[#1a4a40] sm:text-3xl
+                               dark:text-white"
+                    >
                         Attendance Scanner
                     </h1>
 
-                    <p class="mt-1 text-sm text-gray-500
-                              dark:text-gray-400">
+                    <p
+                        class="mt-1 text-sm text-gray-500
+                               dark:text-gray-400"
+                    >
                         Scan the QR code displayed by your professor.
                     </p>
                 </div>
 
-            </div>
+                {{-- Same account and theme area used on the admin dashboard. --}}
+                <div class="flex flex-shrink-0 items-center gap-3">
+
+                    <div class="hidden text-right sm:block">
+                        <p
+                            class="max-w-44 truncate text-sm font-semibold
+                                   text-[#1a4a40] dark:text-white"
+                        >
+                            {{ auth()->user()->name }}
+                        </p>
+
+                        <p
+                            class="text-xs text-gray-500
+                                   dark:text-gray-400"
+                        >
+                            Student
+                        </p>
+                    </div>
+
+                    <x-theme-toggle />
+                </div>
+            </header>
 
             {{-- Welcome banner --}}
             <section
-                class="relative mb-7 overflow-hidden
-                       rounded-3xl bg-[#184d42]
-                       px-7 py-7 text-white shadow-sm">
+                class="relative mb-6 min-w-0 overflow-hidden
+                       rounded-3xl bg-gradient-to-r
+                       from-[#1a4a40] to-[#24584d]
+                       px-5 py-6 text-white shadow-lg
+                       sm:px-7 sm:py-7">
 
                 <div class="relative z-10">
 
-                    <p class="text-xs font-semibold
-                              uppercase tracking-[0.25em]
-                              text-white/60">
+                    <p class="text-[11px] font-semibold uppercase
+                              tracking-[0.2em] text-white/55
+                              sm:text-xs">
                         Smart Attendance
                     </p>
 
-                    <h2 class="mt-3 text-2xl font-bold">
+                    <h2 class="mt-2 text-xl font-bold sm:text-2xl">
                         Ready to record your attendance
                     </h2>
 
@@ -49,15 +77,12 @@
 
                 </div>
 
-                <div class="absolute -right-14 -top-20
-                            h-56 w-56 rounded-full
-                            bg-white/10">
+                <div class="absolute -right-16 -top-20
+                            h-52 w-52 rounded-full
+                            bg-[#d4a373]/15
+                            sm:h-56 sm:w-56">
                 </div>
 
-                <div class="absolute -bottom-24 right-28
-                            h-44 w-44 rounded-full
-                            bg-white/5">
-                </div>
 
             </section>
 
@@ -392,7 +417,7 @@
 
         </div>
 
-    </main>
+    </div>
 
     <script>
         document.addEventListener(
@@ -746,12 +771,12 @@
                     );
 
                     try {
-                        const response =
-                            await fetch(
-                                @js(route(
-                                    'student.attendance.scan'
-                                )), {
-                                    method: 'POST',
+                      
+                          const response = await fetch(
+    "{{ route('student.attendance.scan') }}",
+    {
+        method: 'POST',
+                                   
 
                                     headers: {
                                         'Content-Type': 'application/json',

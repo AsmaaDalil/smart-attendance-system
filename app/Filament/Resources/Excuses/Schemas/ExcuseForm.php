@@ -22,6 +22,7 @@ class ExcuseForm
                         'Review or create an excuse for an absent student.'
                     )
                     ->schema([
+
                         Select::make('attendance_record_id')
                             ->label('Absent Attendance Record')
                             ->options(
@@ -39,23 +40,35 @@ class ExcuseForm
                                             function (
                                                 Builder $query
                                             ) use ($record): void {
-                                                $query
-                                                    ->whereDoesntHave(
-                                                        'excuse'
+                                                /*
+                                                 * عند الإنشاء نظهر سجلات
+                                                 * الحضور التي ليس لها عذر.
+                                                 */
+                                                $query->whereDoesntHave(
+                                                    'excuse'
+                                                );
+
+                                                /*
+                                                 * عند التعديل نُظهر أيضًا
+                                                 * سجل الحضور المرتبط بالعذر
+                                                 * الحالي.
+                                                 */
+                                                if (
+                                                    $record !== null
+                                                    && filled(
+                                                        $record
+                                                            ->attendance_record_id
                                                     )
-                                                    ->when(
-                                                        $record,
-                                                        fn (
-                                                            Builder $query
-                                                        ) => $query
-                                                            ->orWhereKey(
-                                                                $record
-                                                                    ->attendance_record_id
-                                                            )
+                                                ) {
+                                                    $query->orWhere(
+                                                        'attendance_records.id',
+                                                        $record
+                                                            ->attendance_record_id
                                                     );
+                                                }
                                             }
                                         )
-                                        ->latest()
+                                        ->latest('created_at')
                                         ->get()
                                         ->mapWithKeys(
                                             function (
@@ -64,24 +77,28 @@ class ExcuseForm
                                                 $studentName =
                                                     $attendance
                                                         ->student
-                                                        ->user
-                                                        ->name;
+                                                        ?->user
+                                                        ?->name
+                                                    ?? 'Unknown Student';
 
                                                 $universityNumber =
                                                     $attendance
                                                         ->student
-                                                        ->university_number;
+                                                        ?->university_number
+                                                    ?? 'No Number';
 
                                                 $subjectName =
                                                     $attendance
                                                         ->session
-                                                        ->subject
-                                                        ->subject_name;
+                                                        ?->subject
+                                                        ?->subject_name
+                                                    ?? 'Unknown Subject';
 
                                                 $lectureTitle =
                                                     $attendance
                                                         ->session
-                                                        ->lecture_title;
+                                                        ?->lecture_title
+                                                    ?? 'Untitled Lecture';
 
                                                 return [
                                                     $attendance->id =>
@@ -102,6 +119,11 @@ class ExcuseForm
                             ->preload()
                             ->native(false)
                             ->required()
+
+                            /*
+                             * لا يمكن تغيير سجل الحضور
+                             * المرتبط أثناء تعديل العذر.
+                             */
                             ->disabledOn('edit')
                             ->dehydrated(),
 
@@ -112,6 +134,7 @@ class ExcuseForm
                             )
                             ->rows(5)
                             ->required()
+                            ->minLength(10)
                             ->maxLength(2000)
                             ->columnSpanFull(),
 
@@ -128,6 +151,7 @@ class ExcuseForm
                             ->maxSize(5120)
                             ->downloadable()
                             ->openable()
+                            ->previewable(true)
                             ->helperText(
                                 'Accepted files: PDF, JPG, PNG or WEBP. Maximum size: 5 MB.'
                             )

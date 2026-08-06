@@ -86,7 +86,7 @@ bg-[#f8f9fa] relative overflow-hidden">
 
 @if ($errors->any())
     <p class="mt-2 text-xs text-center text-red-600">
-        بيانات الدخول غير صحيحة، يرجى التأكد والمحاولة مرة أخرى.
+Invalid email or password. Please try again.
     </p>
 @endif
 

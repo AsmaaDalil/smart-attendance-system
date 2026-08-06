@@ -368,6 +368,59 @@ $session = AttendanceSession::create([
         'refresh_after' => 15,
     ]);
 }
+public function attendanceSnapshot(
+    AttendanceSession $session
+): JsonResponse {
+    $this->ensureSessionBelongsToProfessor($session);
+
+    $records = $session
+        ->attendanceRecords()
+        ->whereNotNull('scanned_at')
+        ->with('student.user')
+        ->latest('scanned_at')
+        ->get()
+        ->map(
+            function (AttendanceRecord $record): array {
+                return [
+                    'id' => $record->id,
+
+                    'student_name' =>
+                        $record->student?->user?->name
+                        ?? 'Unknown Student',
+
+                    'university_number' =>
+                        $record->student?->university_number
+                        ?? '—',
+
+                    'status' => $record->status,
+
+                    'scanned_at' =>
+                        $record->scanned_at
+                            ?->format('H:i:s')
+                        ?? '—',
+
+                    'distance' =>
+                        $record->distance_meters !== null
+                            ? number_format(
+                                (float) $record->distance_meters,
+                                2
+                            ).' m'
+                            : '—',
+                ];
+            }
+        )
+        ->values();
+
+    return response()
+        ->json([
+            'count' => $records->count(),
+            'records' => $records,
+        ])
+        ->header(
+            'Cache-Control',
+            'no-store, no-cache, must-revalidate, max-age=0'
+        );
+}
 
     private function finishSession(
         AttendanceSession $session

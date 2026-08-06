@@ -9,7 +9,8 @@
             </a>
 
             @if (session('success'))
-                <div class="mb-5 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <div id="session-success-message"
+                     class="mb-5 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 transition-all duration-300 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
                     <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 font-bold dark:bg-emerald-500/20">✓</span>
                     <span>{{ session('success') }}</span>
                 </div>
@@ -42,7 +43,7 @@
 
                 <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#191c1b]">
                     <p class="text-sm text-gray-500">Attendance</p>
-                    <p class="mt-2 font-bold">{{ $session->attendanceRecords->count() }}</p>
+                    <p id="attendance-summary-count" class="mt-2 font-bold">{{ $session->attendanceRecords->count() }}</p>
                 </div>
             </div>
 
@@ -112,7 +113,7 @@
 
                                 <div class="rounded-xl bg-white/10 px-4 py-3">
                                     <p class="text-xs text-white/50">Attendance</p>
-                                    <p class="mt-1 font-bold">{{ $session->attendanceRecords->count() }} students</p>
+                                    <p class="mt-1 font-bold"><span id="attendance-live-count">{{ $session->attendanceRecords->count() }}</span> students</p>
                                 </div>
                             </div>
 
@@ -151,7 +152,7 @@
                             </tr>
                         </thead>
 
-                        <tbody class="divide-y divide-gray-100 dark:divide-white/10">
+                        <tbody id="attendance-records-body" class="divide-y divide-gray-100 dark:divide-white/10">
                             @forelse ($session->attendanceRecords as $record)
                                 <tr>
                                     <td class="px-5 py-4">{{ $record->student->user->name }}</td>
@@ -184,16 +185,140 @@
                     const canvas = document.getElementById('attendance-qr');
                     const countdownElement = document.getElementById('qr-countdown');
                     const statusElement = document.getElementById('qr-status');
+                    const summaryCountElement = document.getElementById('attendance-summary-count');
+                    const liveCountElement = document.getElementById('attendance-live-count');
+                    const recordsBody = document.getElementById('attendance-records-body');
+                    const successMessage = document.getElementById('session-success-message');
+
                     const refreshUrl = qrArea.dataset.refreshUrl;
                     const csrfToken = qrArea.dataset.csrfToken;
 
                     let secondsRemaining = 15;
-                    let refreshInterval = null;
+                    let qrRefreshInterval = null;
                     let countdownInterval = null;
+                    let attendanceInterval = null;
+                    let attendanceRequestRunning = false;
+
+                    /*
+                     * إخفاء رسالة نجاح إنشاء الجلسة تلقائيًا.
+                     */
+                    if (successMessage) {
+                        window.setTimeout(function () {
+                            successMessage.classList.add('opacity-0', '-translate-y-2');
+
+                            window.setTimeout(function () {
+                                successMessage.remove();
+                            }, 300);
+                        }, 5000);
+                    }
+
+                    /*
+                     * تحديث عدد الحضور والجدول من نفس الصفحة كل ثانيتين،
+                     * من دون إعادة تحميل الصفحة كاملة ومن دون Route إضافي.
+                     */
+                    async function refreshAttendance() {
+                        if (attendanceRequestRunning) {
+                            return;
+                        }
+
+                        attendanceRequestRunning = true;
+
+                        try {
+                            const response = await fetch(window.location.href, {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'text/html',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                                credentials: 'same-origin',
+                                cache: 'no-store',
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Unable to refresh attendance records.');
+                            }
+
+                            const html = await response.text();
+                            const documentCopy = new DOMParser().parseFromString(
+                                html,
+                                'text/html'
+                            );
+
+                            const newSummaryCount = documentCopy.getElementById(
+                                'attendance-summary-count'
+                            );
+
+                            const newLiveCount = documentCopy.getElementById(
+                                'attendance-live-count'
+                            );
+
+                            const newRecordsBody = documentCopy.getElementById(
+                                'attendance-records-body'
+                            );
+
+                            if (
+                                newSummaryCount
+                                && summaryCountElement
+                                && summaryCountElement.textContent.trim()
+                                    !== newSummaryCount.textContent.trim()
+                            ) {
+                                summaryCountElement.textContent =
+                                    newSummaryCount.textContent.trim();
+
+                                summaryCountElement.classList.add(
+                                    'scale-110',
+                                    'text-emerald-600'
+                                );
+
+                                window.setTimeout(function () {
+                                    summaryCountElement.classList.remove(
+                                        'scale-110',
+                                        'text-emerald-600'
+                                    );
+                                }, 350);
+                            }
+
+                            if (newLiveCount && liveCountElement) {
+                                liveCountElement.textContent =
+                                    newLiveCount.textContent.trim();
+                            }
+
+                            if (
+                                newRecordsBody
+                                && recordsBody
+                                && recordsBody.innerHTML.trim()
+                                    !== newRecordsBody.innerHTML.trim()
+                            ) {
+                                recordsBody.innerHTML = newRecordsBody.innerHTML;
+
+                                const newestRow = recordsBody.querySelector('tr');
+
+                                if (newestRow) {
+                                    newestRow.classList.add(
+                                        'bg-emerald-50',
+                                        'dark:bg-emerald-500/10'
+                                    );
+
+                                    window.setTimeout(function () {
+                                        newestRow.classList.remove(
+                                            'bg-emerald-50',
+                                            'dark:bg-emerald-500/10'
+                                        );
+                                    }, 1400);
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Attendance refresh error:', error);
+                        } finally {
+                            attendanceRequestRunning = false;
+                        }
+                    }
 
                     async function generateQrCode() {
                         try {
-                            statusElement.textContent = 'Generating secure QR code...';
+                            statusElement.textContent =
+                                'Generating secure QR code...';
+
                             statusElement.classList.remove('text-red-300');
 
                             const response = await fetch(refreshUrl, {
@@ -208,11 +333,15 @@
                             const data = await response.json();
 
                             if (!response.ok) {
-                                throw new Error(data.message || 'Unable to generate QR code.');
+                                throw new Error(
+                                    data.message || 'Unable to generate QR code.'
+                                );
                             }
 
                             if (!window.QRCode) {
-                                throw new Error('QR library was not loaded. Run npm install qrcode and npm run dev.');
+                                throw new Error(
+                                    'QR library was not loaded. Run npm install and npm run build.'
+                                );
                             }
 
                             await window.QRCode.toCanvas(canvas, data.payload, {
@@ -226,17 +355,19 @@
 
                             secondsRemaining = 15;
                             countdownElement.textContent = secondsRemaining;
-                            statusElement.textContent = 'QR code is active and ready to scan.';
+                            statusElement.textContent =
+                                'QR code is active and ready to scan.';
                         } catch (error) {
                             statusElement.textContent = error.message;
                             statusElement.classList.add('text-red-300');
-                            clearInterval(refreshInterval);
+
+                            clearInterval(qrRefreshInterval);
                             clearInterval(countdownInterval);
                         }
                     }
 
                     function startCountdown() {
-                        countdownInterval = setInterval(function () {
+                        countdownInterval = window.setInterval(function () {
                             secondsRemaining--;
 
                             if (secondsRemaining < 0) {
@@ -248,12 +379,23 @@
                     }
 
                     generateQrCode();
+                    refreshAttendance();
                     startCountdown();
-                    refreshInterval = setInterval(generateQrCode, 15000);
+
+                    qrRefreshInterval = window.setInterval(
+                        generateQrCode,
+                        15000
+                    );
+
+                    attendanceInterval = window.setInterval(
+                        refreshAttendance,
+                        2000
+                    );
 
                     window.addEventListener('beforeunload', function () {
-                        clearInterval(refreshInterval);
+                        clearInterval(qrRefreshInterval);
                         clearInterval(countdownInterval);
+                        clearInterval(attendanceInterval);
                     });
                 });
             </script>

@@ -228,6 +228,13 @@ Route::post(
     [AttendanceSessionController::class, 'refreshQr']
 )->name('sessions.qr');
 Route::get(
+    '/sessions/{session}/attendance-snapshot',
+    [
+        AttendanceSessionController::class,
+        'attendanceSnapshot',
+    ]
+)->name('sessions.attendance-snapshot');
+Route::get(
     '/attendance',
     [AttendanceController::class, 'index']
 )->name('attendance.index');

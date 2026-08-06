@@ -20,21 +20,14 @@
         rel="stylesheet"
     >
 
-    {{-- Keep The Saved Light/Dark Mode Before The Page Appears --}}
+    {{-- Apply the saved theme exactly like the admin layout. --}}
     <script>
-        (function () {
-            const savedTheme = localStorage.getItem(
-                'smart-attendance-theme'
-            );
-
-            const prefersDark = window.matchMedia(
-                '(prefers-color-scheme: dark)'
-            ).matches;
+        (() => {
+            const theme = localStorage.getItem('theme');
 
             document.documentElement.classList.toggle(
                 'dark',
-                savedTheme === 'dark'
-                || (! savedTheme && prefersDark)
+                theme === 'dark'
             );
         })();
     </script>
@@ -64,16 +57,21 @@
             overflow-x: hidden;
         }
 
-        .student-interface h1,
-        .student-interface h2,
-        .student-interface h3,
-        .student-interface h4,
-        .student-interface h5,
-        .student-interface nav a,
-        .student-interface label,
-        .student-interface button,
-        .student-interface .title-case {
-            text-transform: capitalize;
+        #studentSidebarBrand {
+            min-height: 112px !important;
+            padding: 30px 24px 16px !important;
+            align-items: flex-start !important;
+        }
+
+        .student-hidden-scrollbar {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .student-hidden-scrollbar::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
         }
 
         /*
@@ -154,6 +152,7 @@
          * Laptop And Desktop
          */
         @media (min-width: 1024px) {
+
             #studentSidebar {
                 transform: translateX(0);
             }
@@ -181,8 +180,8 @@
 </head>
 
 <body
-    class="student-interface min-h-screen w-full min-w-0
-           max-w-none overflow-x-hidden
+    class="min-h-screen w-full min-w-0
+           max-w-none overflow-x-hidden antialiased
            bg-[#f8f9fa] text-gray-800
            transition-colors duration-300
            dark:bg-[#0f1110] dark:text-gray-100"
@@ -201,16 +200,16 @@
 >
     <div class="min-w-0">
         <h1
-            class="truncate text-lg font-bold
-                   text-[#184d42] sm:text-xl
+            class="truncate text-sm font-bold
+                   text-[#184d42] sm:text-base
                    dark:text-white"
         >
             Smart Attendance
         </h1>
 
         <p
-            class="text-sm text-gray-500
-                   dark:text-gray-400"
+            class="text-[10px] text-gray-500
+                   sm:text-xs dark:text-gray-400"
         >
             Student Portal
         </p>
@@ -219,13 +218,12 @@
     <button
         id="openStudentSidebar"
         type="button"
-        aria-label="Open Navigation"
+        aria-label="Open navigation"
         aria-controls="studentSidebar"
         aria-expanded="false"
-        class="ml-3 flex h-10 w-10 flex-shrink-0
-               items-center justify-center rounded-xl
-               bg-[#184d42] text-white shadow-sm
-               transition hover:bg-[#24584d]
+        class="ml-3 flex h-10 w-10 flex-shrink-0 items-center
+               justify-center rounded-xl bg-[#184d42] text-white
+               shadow-sm transition hover:bg-[#24584d]
                focus:outline-none focus:ring-2
                focus:ring-[#d4a373]/70"
     >
@@ -246,6 +244,7 @@
     </button>
 </header>
 
+
 {{-- Mobile And Tablet Overlay --}}
 <div
     id="studentSidebarOverlay"
@@ -256,23 +255,22 @@
 {{-- Student Sidebar --}}
 <aside
     id="studentSidebar"
-    class="fixed inset-y-0 left-0 z-50
-           flex w-72 max-w-[86vw]
-           flex-col overflow-hidden
-           bg-[#1a4a40] text-white shadow-2xl"
+    class="fixed inset-y-0 left-0 z-50 flex h-screen
+           w-72 max-w-[86vw] flex-col overflow-hidden
+           bg-[#184d42] text-white shadow-2xl"
 >
     {{-- Brand --}}
     <div
-        class="flex min-h-24 flex-shrink-0
-               items-center justify-between
-               border-b border-white/10 px-6"
+        id="studentSidebarBrand"
+        class="flex flex-shrink-0 items-start
+               justify-between border-b border-white/10"
     >
         <div class="min-w-0">
-            <h1 class="truncate text-2xl font-bold">
+            <h1 class="truncate text-xl font-bold leading-tight">
                 Smart Attendance
             </h1>
 
-            <p class="mt-1 text-sm text-white/60">
+            <p class="mt-2 text-xs text-white/60">
                 Student Portal
             </p>
         </div>
@@ -281,7 +279,7 @@
             id="closeStudentSidebar"
             type="button"
             aria-label="Close Navigation"
-            class="ml-3 flex h-9 w-9 flex-shrink-0
+            class="ml-3 mt-1 flex h-9 w-9 flex-shrink-0
                    items-center justify-center rounded-xl
                    bg-white/10 text-white transition
                    hover:bg-white/20 focus:outline-none
@@ -306,13 +304,13 @@
 
     {{-- Navigation --}}
     <nav
-        class="min-h-0 flex-1 space-y-1.5
-               overflow-y-auto p-4"
+        class="student-hidden-scrollbar min-h-0 flex-1
+               space-y-1.5 overflow-y-auto p-4"
     >
         <a
             href="{{ route('student.dashboard') }}"
             class="student-nav-link block rounded-xl
-                   px-4 py-3 text-lg transition
+                   px-4 py-3 text-sm transition
                    {{
                        request()->routeIs('student.dashboard')
                            ? 'bg-white/15 font-semibold text-white'
@@ -325,7 +323,7 @@
         <a
             href="{{ route('student.scanner') }}"
             class="student-nav-link block rounded-xl
-                   px-4 py-3 text-lg transition
+                   px-4 py-3 text-sm transition
                    {{
                        request()->routeIs('student.scanner')
                        || request()->routeIs(
@@ -348,7 +346,7 @@
                     'student.attendance.index'
                 ) }}"
                 class="student-nav-link block rounded-xl
-                       px-4 py-3 text-lg transition
+                       px-4 py-3 text-sm transition
                        {{
                            request()->routeIs(
                                'student.attendance.*'
@@ -371,7 +369,7 @@
                     'student.excuses.index'
                 ) }}"
                 class="student-nav-link block rounded-xl
-                       px-4 py-3 text-lg transition
+                       px-4 py-3 text-sm transition
                        {{
                            request()->routeIs(
                                'student.excuses.*'
@@ -394,7 +392,7 @@
                     'student.profile.edit'
                 ) }}"
                 class="student-nav-link block rounded-xl
-                       px-4 py-3 text-lg transition
+                       px-4 py-3 text-sm transition
                        {{
                            request()->routeIs(
                                'student.profile.*'
@@ -409,13 +407,7 @@
     </nav>
 
     {{-- Logout --}}
-    <div
-        class="flex-shrink-0
-               border-t border-white/10
-               px-4 pt-4"
-        style="padding-bottom:
-               calc(1rem + env(safe-area-inset-bottom));"
-    >
+    <div class="flex-shrink-0 border-t border-white/10 p-4">
         <form
             method="POST"
             action="{{ route('logout') }}"
@@ -425,7 +417,7 @@
             <button
                 type="submit"
                 class="w-full rounded-xl px-4 py-3
-                       text-lg font-medium text-white/70
+                       text-sm font-medium text-white/70
                        transition hover:bg-red-500/15
                        hover:text-red-200"
             >
@@ -438,42 +430,9 @@
 {{-- Main Student Content --}}
 <main
     id="studentPageContent"
-    class="relative min-h-screen w-full min-w-0
-           max-w-none overflow-x-hidden"
+    class="min-h-screen w-full min-w-0 max-w-none
+           overflow-x-hidden"
 >
-    {{-- Keep The Theme Button Visible On Every Student Page --}}
-    @unless (request()->routeIs('student.dashboard'))
-        <div
-            id="studentThemeControl"
-            class="absolute right-4 top-20 z-30
-                   flex items-center gap-3
-                   sm:right-6 sm:top-24
-                   lg:right-8 lg:top-2"
-        >
-            {{-- Student Name And Role Like Dashboard --}}
-            <div class="hidden min-w-0 text-right sm:block">
-                <p
-                    class="max-w-44 truncate text-sm
-                           font-semibold leading-tight
-                           text-[#184d42]
-                           dark:text-white"
-                >
-                    {{ auth()->user()->name }}
-                </p>
-
-                <p
-                    class="mt-0.5 text-xs leading-tight
-                           text-gray-500
-                           dark:text-gray-400"
-                >
-                    Student
-                </p>
-            </div>
-
-            <x-theme-toggle />
-        </div>
-    @endunless
-
     {{ $slot }}
 </main>
 
