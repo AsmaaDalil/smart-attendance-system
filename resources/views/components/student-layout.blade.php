@@ -13,8 +13,7 @@
         content="{{ csrf_token() }}"
     >
 
-    <title>Smart Attendance - Student</title>
-
+<title>Smart Attendance System - Student</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet"
@@ -198,22 +197,15 @@
            transition-colors duration-300 sm:px-6
            dark:border-white/10 dark:bg-[#171a19]"
 >
-    <div class="min-w-0">
-        <h1
-            class="truncate text-sm font-bold
-                   text-[#184d42] sm:text-base
-                   dark:text-white"
-        >
-            Smart Attendance
-        </h1>
+<div class="flex min-w-0 items-center gap-2">
 
-        <p
-            class="text-[10px] text-gray-500
-                   sm:text-xs dark:text-gray-400"
-        >
-            Student Portal
-        </p>
-    </div>
+    <img
+        src="{{ asset('images/logo.png') }}"
+        alt="Smart Attendance System"
+        class="h-10 w-auto object-contain"
+    >
+
+</div>
 
     <button
         id="openStudentSidebar"
@@ -260,20 +252,19 @@
            bg-[#184d42] text-white shadow-2xl"
 >
     {{-- Brand --}}
-    <div
-        id="studentSidebarBrand"
-        class="flex flex-shrink-0 items-start
-               justify-between border-b border-white/10"
-    >
-        <div class="min-w-0">
-            <h1 class="truncate text-xl font-bold leading-tight">
-                Smart Attendance
-            </h1>
+    <div class="w-full text-center">
 
-            <p class="mt-2 text-xs text-white/60">
-                Student Portal
-            </p>
-        </div>
+    <img
+        src="{{ asset('images/logo.png') }}"
+        alt="Smart Attendance System"
+        style="width: 125px; height: auto; margin: 5px auto 0;"
+    >
+
+    <p class="mt-1 text-xs text-white/60">
+        Student Portal
+    </p>
+
+</div>
 
         <button
             id="closeStudentSidebar"

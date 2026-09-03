@@ -16,24 +16,13 @@ bg-[#f8f9fa] relative overflow-hidden">
 
         <div class="text-center mb-10">
 
-            <div class="w-16 h-16 mx-auto mb-5
-            bg-[#1a4a40]
-            rounded-2xl flex items-center justify-center
-            shadow-lg shadow-[#1a4a40]/20">
+    <img
+        src="{{ asset('images/logo.png') }}"
+        alt="Smart Attendance System"
+        class="w-72 max-w-full mx-auto mb-5"
+    >
 
-                <span class="text-white text-xl font-bold">SA</span>
-
-            </div>
-
-            <h1 class="text-3xl font-bold text-[#1a4a40]">
-                Smart Attendance
-            </h1>
-
-            <p class="text-gray-600 text-sm mt-2">
-                Welcome back to your dashboard
-            </p>
-
-        </div>
+</div>
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
@@ -89,13 +78,6 @@ bg-[#f8f9fa] relative overflow-hidden">
 Invalid email or password. Please try again.
     </p>
 @endif
-
-            <div class="text-center mt-6">
-                <a href="{{ route('register') }}"
-                   class="text-[#1a4a40] hover:text-[#153d35] font-medium text-sm transition">
-                   Create new account
-                </a>
-            </div>
 @if (session('success'))
     <div class="p-4 mb-4 text-green-700 bg-green-100 rounded-lg">
         {{ session('success') }}
