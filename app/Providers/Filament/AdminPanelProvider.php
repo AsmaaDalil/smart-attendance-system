@@ -42,6 +42,14 @@ class AdminPanelProvider extends PanelProvider
 
             /*
             |--------------------------------------------------------------------------
+            | Disable Global Search
+            |--------------------------------------------------------------------------
+            */
+
+            ->globalSearch(false)
+
+            /*
+            |--------------------------------------------------------------------------
             | Colors
             |--------------------------------------------------------------------------
             */
@@ -82,12 +90,12 @@ class AdminPanelProvider extends PanelProvider
             |--------------------------------------------------------------------------
             */
 
-       ->navigationItems([
-    NavigationItem::make('Back to Main Dashboard')
-        ->url(fn (): string => route('admin.dashboard'))
-        ->icon('heroicon-o-arrow-left')
-        ->sort(-100),
-])
+            ->navigationItems([
+                NavigationItem::make('Back to Main Dashboard')
+                    ->url(fn (): string => route('admin.dashboard'))
+                    ->icon('heroicon-o-arrow-left')
+                    ->sort(-100),
+            ])
 
             /*
             |--------------------------------------------------------------------------

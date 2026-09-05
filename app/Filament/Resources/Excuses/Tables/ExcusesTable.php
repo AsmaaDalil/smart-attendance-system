@@ -60,7 +60,6 @@ class ExcusesTable
 
                 TextColumn::make('reason')
                     ->label('Reason')
-                    ->limit(40)
                     ->wrap()
                     ->tooltip(
                         fn (Excuse $record): string =>

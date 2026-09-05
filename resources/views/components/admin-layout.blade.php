@@ -282,149 +282,56 @@
         </button>
     </div>
 
-    {{-- Navigation --}}
-    <nav
-        class="admin-hidden-scrollbar min-h-0 flex-1
-               space-y-1.5 overflow-y-auto p-4"
+{{-- Navigation --}}
+<nav
+    class="admin-hidden-scrollbar min-h-0 flex-1
+           space-y-1.5 overflow-y-auto p-4"
+>
+    <a
+        href="{{ route('admin.dashboard') }}"
+        class="admin-nav-link block rounded-xl px-4 py-3
+               text-sm transition
+               {{
+                    request()->routeIs('admin.dashboard')
+                        ? 'bg-white/15 font-semibold text-white'
+                        : 'text-white/75 hover:bg-white/10 hover:text-white'
+               }}"
     >
-        <a
-            href="{{ route('admin.dashboard') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->routeIs('admin.dashboard')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
+        Dashboard
+    </a>
+
+    <a
+        href="{{ route('filament.admin.pages.dashboard') }}"
+        class="admin-nav-link flex items-center justify-between
+               rounded-xl px-4 py-3 text-sm transition
+               text-white/75 hover:bg-white/10 hover:text-white"
+    >
+        <span>Manage System</span>
+
+        <span
+            class="rounded-md bg-[#d4a373]
+                   px-2 py-0.5 text-[9px]
+                   font-bold text-[#184d42]"
         >
-            Dashboard
-        </a>
+            ADMIN
+        </span>
+    </a>
 
-        <a
-            href="{{ route('filament.admin.pages.dashboard') }}"
-            class="admin-nav-link flex items-center justify-between
-                   rounded-xl px-4 py-3 text-sm transition
-                   text-white/75 hover:bg-white/10 hover:text-white"
-        >
-            <span>Manage System</span>
+    <div class="my-3 h-px bg-white/10"></div>
 
-            <span
-                class="rounded-md bg-[#d4a373]
-                       px-2 py-0.5 text-[9px]
-                       font-bold text-[#184d42]"
-            >
-                ADMIN
-            </span>
-        </a>
-
-        <div class="my-3 h-px bg-white/10"></div>
-
-        <a
-            href="{{ url('/admin/students') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->is('admin/students*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Students
-        </a>
-
-        <a
-            href="{{ url('/admin/professors') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->is('admin/professors*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Professors
-        </a>
-
-        <a
-            href="{{ url('/admin/subjects') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->is('admin/subjects*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Subjects
-        </a>
-
-        <a
-            href="{{ url('/admin/rooms') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->is('admin/rooms*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Rooms
-        </a>
-
-        <a
-            href="{{ url('/admin/enrollments') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->is('admin/enrollments*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Enrollments
-        </a>
-
-        <div class="my-3 h-px bg-white/10"></div>
-
-        <a
-            href="{{ url('/admin/attendance-records') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->is('admin/attendance-records*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Attendance
-        </a>
-
-        <a
-            href="{{ url('/admin/excuses') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->is('admin/excuses*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Excuses
-        </a>
-
-        <a
-            href="{{ route('admin.reports.index') }}"
-            class="admin-nav-link block rounded-xl px-4 py-3
-                   text-sm transition
-                   {{
-                       request()->routeIs('admin.reports.*')
-                           ? 'bg-white/15 font-semibold text-white'
-                           : 'text-white/75 hover:bg-white/10 hover:text-white'
-                   }}"
-        >
-            Reports
-        </a>
-    </nav>
+    <a
+        href="{{ route('admin.reports.index') }}"
+        class="admin-nav-link block rounded-xl px-4 py-3
+               text-sm transition
+               {{
+                    request()->routeIs('admin.reports.*')
+                        ? 'bg-white/15 font-semibold text-white'
+                        : 'text-white/75 hover:bg-white/10 hover:text-white'
+               }}"
+    >
+        Reports
+    </a>
+</nav>
 
     {{-- Logout --}}
     <div class="flex-shrink-0 border-t border-white/10 p-4">
