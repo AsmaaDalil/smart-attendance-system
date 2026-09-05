@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
             'name' => 'System Administrator',
             'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('12345678'),
+'password' => Hash::make('Asmaa@123'),
             'role' => 'admin',
         ]);
 
@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'name' => 'Professor',
             'email' => 'professor@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('12345678'),
+            'password' => Hash::make('Asmaa@123'),
             'role' => 'professor',
         ]);
 
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'name' => 'Asmaa Dalil',
             'email' => 'asmaadalil@student.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('12345678'),
+            'password' => Hash::make('Asmaa@123'),
             'role' => 'student',
         ]);
 
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
             'name' => 'Noor Al-Bakri',
             'email' => 'nooralbakri@student.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('12345678'),
+            'password' => Hash::make('Asmaa@123'),
             'role' => 'student',
         ]);
     }

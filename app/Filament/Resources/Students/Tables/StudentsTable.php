@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\Students\Tables;
 
 use App\Models\Student;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -70,6 +72,29 @@ class StudentsTable
 
                 EditAction::make()
                     ->label('Edit'),
+
+                Action::make('reset_device')
+                    ->label('Reset Device')
+                    ->icon('heroicon-o-device-phone-mobile')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('Reset Student Device')
+                    ->modalDescription(
+                        'The current device will be unlinked. The student will be able to register a new device on the next attendance attempt.'
+                    )
+                    ->modalSubmitActionLabel('Reset Device')
+                    ->action(function (Student $record): void {
+
+                        $record->update([
+                            'device_token' => null,
+                        ]);
+
+                        Notification::make()
+                            ->title('Device reset successfully')
+                            ->body('The student can now register attendance using a new device.')
+                            ->success()
+                            ->send();
+                    }),
 
                 DeleteAction::make()
                     ->label('Delete')

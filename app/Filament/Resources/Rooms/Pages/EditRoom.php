@@ -10,12 +10,16 @@ class EditRoom extends EditRecord
 {
     protected static string $resource = RoomResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            DeleteAction::make(),
-        ];
-    }
+protected function getHeaderActions(): array
+{
+    return [
+        DeleteAction::make()
+            ->visible(
+                fn (): bool =>
+                    ! $this->record->sessions()->exists()
+            ),
+    ];
+}
     protected function getRedirectUrl(): string
 {
     return $this->getResource()::getUrl('index');

@@ -10,12 +10,16 @@ class EditSubject extends EditRecord
 {
     protected static string $resource = SubjectResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            DeleteAction::make(),
-        ];
-    }
+protected function getHeaderActions(): array
+{
+    return [
+        DeleteAction::make()
+            ->visible(
+                fn (): bool =>
+                    ! $this->record->sessions()->exists()
+            ),
+    ];
+}
     protected function getRedirectUrl(): string
 {
     return $this->getResource()::getUrl('index');
