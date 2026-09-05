@@ -224,8 +224,7 @@
                                 name="name"
                                 type="text"
                                 autocomplete="name"
-                                value="{{ old('name') }}"
-                                placeholder="{{ auth()->user()->name }}"
+                                value="{{ old('name', auth()->user()->name) }}"
                                 class="w-full rounded-xl
                                        border-gray-200 bg-white
                                        text-gray-800
@@ -262,8 +261,7 @@
                                 name="email"
                                 type="email"
                                 autocomplete="email"
-                                value="{{ old('email') }}"
-                                placeholder="{{ auth()->user()->email }}"
+                                value="{{ old('email', auth()->user()->email) }}"
                                 class="w-full rounded-xl
                                        border-gray-200 bg-white
                                        text-gray-800
@@ -300,9 +298,7 @@
                                 name="phone"
                                 type="text"
                                 autocomplete="tel"
-                                value="{{ old('phone') }}"
-                                placeholder="{{ $student->phone
-                                    ?: 'Enter your phone number' }}"
+                                value="{{ old('phone', $student->phone) }}"
                                 class="w-full rounded-xl
                                        border-gray-200 bg-white
                                        text-gray-800
@@ -339,8 +335,6 @@
                                 name="address"
                                 rows="4"
                                 maxlength="500"
-                                placeholder="{{ $student->address
-                                    ?: 'Enter your address' }}"
                                 class="w-full resize-none rounded-xl
                                        border-gray-200 bg-white
                                        text-gray-800
@@ -351,7 +345,7 @@
                                        dark:bg-[#101312]
                                        dark:text-white
                                        dark:placeholder:text-gray-500"
-                            >{{ old('address') }}</textarea>
+                            >{{ old('address', $student->address) }}</textarea>
 
                             @error('address', 'updateProfile')
                                 <p class="mt-2 text-sm text-red-600

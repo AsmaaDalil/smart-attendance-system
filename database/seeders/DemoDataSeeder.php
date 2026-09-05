@@ -21,26 +21,26 @@ class DemoDataSeeder extends Seeder
     {
         DB::transaction(function (): void {
             // 1) Main login accounts + extra professors.
-            $admin = User::create([
-                'name' => 'System Administrator',
-                'email' => 'admin@gmail.com',
-                'email_verified_at' => now(),
-                'password' => Hash::make('12345678'),
-                'role' => 'admin',
-            ]);
+        $admin = User::create([
+    'name' => 'System Administrator',
+    'email' => 'admin@gmail.com',
+    'email_verified_at' => now(),
+    'password' => Hash::make('Asmaa@123'),
+    'role' => 'admin',
+]);
 
-            $professors = collect([
-                ['name' => 'Dr. Ahmad Khalil', 'email' => 'professor@gmail.com'],
-                ['name' => 'Dr. Lina Hassan', 'email' => 'lina.professor@gmail.com'],
-                ['name' => 'Dr. Omar Darwish', 'email' => 'omar.professor@gmail.com'],
-            ])->map(function (array $data): User {
-                return User::create([
-                    ...$data,
-                    'email_verified_at' => now(),
-                    'password' => Hash::make('12345678'),
-                    'role' => 'professor',
-                ]);
-            });
+$professors = collect([
+    ['name' => 'Dr. Ahmad Khalil', 'email' => 'professor@gmail.com'],
+    ['name' => 'Dr. Lina Hassan', 'email' => 'lina.professor@gmail.com'],
+    ['name' => 'Dr. Omar Darwish', 'email' => 'omar.professor@gmail.com'],
+])->map(function (array $data): User {
+    return User::create([
+        ...$data,
+        'email_verified_at' => now(),
+        'password' => Hash::make('Asmaa@123'),
+        'role' => 'professor',
+    ]);
+});
 
             // 2) Students. Asmaa keeps the familiar demo login.
             $studentData = [
@@ -65,7 +65,7 @@ class DemoDataSeeder extends Seeder
                     'name' => $name,
                     'email' => $email,
                     'email_verified_at' => now(),
-                    'password' => Hash::make('12345678'),
+                    'password' => Hash::make('Asmaa@123'),
                     'role' => 'student',
                 ]);
 
